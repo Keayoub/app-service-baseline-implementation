@@ -32,9 +32,9 @@ param chatGptDeploymentName string = '' // Set in main.parameters.json
 param chatGptDeploymentCapacity int = 20
 param chatGptModelName string = '' // Set in main.parameters.json
 param chatGptModelVersion string = '1106-preview'
-param embeddingDeploymentName string = '' // Set in main.parameters.json
-param embeddingDeploymentCapacity int = 30
-param embeddingModelName string = '' // Set in main.parameters.json
+// param embeddingDeploymentName string = '' // Set in main.parameters.json
+// param embeddingDeploymentCapacity int = 30
+// param embeddingModelName string = '' // Set in main.parameters.json
 
 @description('Use Application Insights for monitoring and performance tracing')
 param useApplicationInsights bool = true
@@ -112,6 +112,8 @@ module openAiModule 'modules/ai/cognitiveservices.bicep' = {
   params: {
     name: !empty(openAiServiceName) ? openAiServiceName : 'openai-${resourceToken}'
     location: openAiResourceGroupLocation
+    vnetName: networkModule.outputs.vnetNName
+    privateEndpointsSubnetName: networkModule.outputs.privateEndpointsSubnetName
     tags: tags
     sku: {
       name: openAiSkuName
@@ -192,6 +194,18 @@ module gitlabRunner 'modules/pipelines/gitlab-runner.bicep' = {
     adminPasswordOrKey:adminPasswordOrKey
     vnetName: networkModule.outputs.vnetNName
     privateEndpointsSubnetName: networkModule.outputs.privateEndpointsSubnetName
+  }
+}
+
+// Deploy APIM 
+module apimModule 'modules/apim.bicep' = {
+  name: 'apimDeploy'
+  params: {
+    location: location
+    baseName: resourceToken    
+    vnetName: networkModule.outputs.vnetNName        
+    privateEndpointsSubnetName:networkModule.outputs.privateEndpointsSubnetName
+    openaibackendUrl: openAiModule.outputs.endpoint
   }
 }
 

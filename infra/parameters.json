@@ -19,10 +19,7 @@
     },
     "chatGptModelVersion": {
       "value": "1106-Preview"
-    },
-    "embeddingDeploymentCapacity": {
-      "value": 30
-    },
+    },  
     "useApplicationInsights": {
       "value": true
     },
@@ -49,12 +46,6 @@
     },
     "chatGptModelName": {
       "value": "gpt-4"
-    },
-    "embeddingDeploymentName": {
-      "value": "embedding"
-    },
-    "embeddingModelName": {
-      "value": "text-embedding-ada-002"
     }
   }
 }

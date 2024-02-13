@@ -15,8 +15,8 @@ param privateEndpointsSubnetName string
 // variables
 var storageName = 'st${baseName}'
 var storageSkuName = 'Standard_LRS'
-var storageDnsGroupName = '${storagePrivateEndpointName}/default'
 var storagePrivateEndpointName = 'pep-${storageName}'
+var storageDnsGroupName = '${storagePrivateEndpointName}/default'
 var blobStorageDnsZoneName = 'privatelink.blob.${environment().suffixes.storage}'
 
 // ---- Existing resources ----

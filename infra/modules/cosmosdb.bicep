@@ -13,6 +13,10 @@ param location string = resourceGroup().location
 param vnetName string
 param privateEndpointsSubnetName string
 
+var cosmosPrivateEndpointName = 'pep-${cosmosDBAccountName}'
+var cosmosDnsGroupName = '${cosmosPrivateEndpointName}/default'
+var cosmosDnsZoneName = 'privatelink.documents.azure.com'
+
 // ---- Existing resources ----
 resource vnet 'Microsoft.Network/virtualNetworks@2022-11-01' existing = {
   name: vnetName
@@ -46,31 +50,6 @@ resource cosmosDBAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
   }
 }
 
-// create cosmosdb privare endpoint
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2019-04-01' = {
-  name: cosmosDbPrivateEndpointName
-  location: location
-  properties: {
-    subnet: {
-      id: vnet::privateEndpointsSubnet.id
-    }
-    privateLinkServiceConnections: [
-      {
-        name: 'MyConnection'
-        properties: {
-          privateLinkServiceId: cosmosDBAccount.id
-          groupIds: [
-            'Sql'
-          ]
-          requestMessage: ''
-        }
-      }
-    ]
-  }
-}
-
-output privateEndpointNetworkInterface string = privateEndpoint.properties.networkInterfaces[0].id
-
 resource cosmosDBDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-04-15' = {
   parent: cosmosDBAccount
   name: cosmosDBDatabaseName
@@ -100,3 +79,64 @@ resource cosmosDBContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/c
     }
   }
 }
+
+// create cosmosdb privare endpoint
+resource cosmosprivateEndpoint 'Microsoft.Network/privateEndpoints@2022-11-01' = {
+  name: cosmosDbPrivateEndpointName
+  location: location
+  properties: {
+    subnet: {
+      id: vnet::privateEndpointsSubnet.id
+    }
+    privateLinkServiceConnections: [
+      {
+        name: cosmosDbPrivateEndpointName
+        properties: {
+          privateLinkServiceId: cosmosDBAccount.id
+          groupIds: [
+            'Sql'
+          ]
+          requestMessage: ''
+        }
+      }
+    ]
+  }
+}
+
+resource cosmosDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+  name: cosmosDnsZoneName
+  location: 'global'
+  properties: {}
+}
+
+// create cosmosdb private dns zone
+resource cosmosDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+  parent: cosmosDnsZone
+  name: '${cosmosDnsZoneName}-link'
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: vnet.id
+    }
+  }
+}
+
+resource cosmosDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-11-01' = {
+  name: cosmosDnsGroupName
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: cosmosDnsZoneName
+        properties: {
+          privateDnsZoneId: cosmosDnsZone.id
+        }
+      }
+    ]
+  }
+  dependsOn: [
+    cosmosprivateEndpoint
+  ]
+}
+
+output privateEndpointNetworkInterface string = cosmosprivateEndpoint.properties.networkInterfaces[0].id
