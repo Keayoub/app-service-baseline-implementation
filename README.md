@@ -59,7 +59,13 @@ The following steps are required to deploy the infrastructure from the command l
      echo APP_GATEWAY_LISTENER_CERTIFICATE_APPSERV_BASELINE: $APP_GATEWAY_LISTENER_CERTIFICATE_APPSERV_BASELINE
      ```
 
-1. Update the infra-as-code/parameters file
+   - Create SSH Key for VM.
+
+      ```bash
+      ssh-keygen -t rsa -b 2048
+      ```
+
+3. Update the infra/parameters file
 
 ```json
 {

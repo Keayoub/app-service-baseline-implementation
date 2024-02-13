@@ -11,7 +11,7 @@ param location string = resourceGroup().location
 @description('The certificate data for app gateway TLS termination. The value is base64 encoded')
 @secure()
 param appGatewayListenerCertificate string
-param sqlConnectionString string
+//param sqlConnectionString string
 
 // existing resource name params 
 param vnetName string
@@ -117,13 +117,13 @@ resource keyVaultDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZone
   ]
 }
 
-resource sqlConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
-  parent: keyVault
-  name: 'adWorksConnString'
-  properties: {
-    value: sqlConnectionString
-  }
-}
+// resource sqlConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
+//   parent: keyVault
+//   name: 'adWorksConnString'
+//   properties: {
+//     value: sqlConnectionString
+//   }
+// }
 
 @description('The name of the key vault account.')
 output keyVaultName string= keyVault.name

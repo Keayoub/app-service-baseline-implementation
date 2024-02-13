@@ -35,3 +35,10 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+# pub file
+gl-runner
+gl-runner.pub
+appgw.pub
+appgw.key
+appgw.crt

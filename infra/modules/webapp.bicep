@@ -9,13 +9,10 @@ param baseName string
 param location string = resourceGroup().location
 
 param developmentEnvironment bool
-param publishFileName string
-
 // existing resource name params 
 param vnetName string
 param appServicesSubnetName string
 param privateEndpointsSubnetName string
-param storageName string
 param keyVaultName string
 param logWorkspaceName string
 
@@ -23,7 +20,7 @@ param logWorkspaceName string
 var appName = 'app-${baseName}'
 var appServicePlanName = 'asp-${appName}${uniqueString(subscription().subscriptionId)}'
 var appServiceManagedIdentityName = 'id-${appName}'
-var packageLocation = 'https://${storageName}.blob.${environment().suffixes.storage}/deploy/${publishFileName}'
+// var packageLocation = 'https://${storageName}.blob.${environment().suffixes.storage}/deploy/${publishFileName}'
 var appServicePrivateEndpointName = 'pep-${appName}'
 var appInsightsName= 'appinsights-${appName}'
 
@@ -59,9 +56,9 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing =  {
   name: keyVaultName
 }
 
-resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' existing =  {
-  name: storageName
-}
+// resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' existing =  {
+//   name: storageName
+// }
 
 resource logWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
   name: logWorkspaceName
@@ -74,13 +71,12 @@ resource keyVaultSecretsUserRole 'Microsoft.Authorization/roleDefinitions@2022-0
 }
 
 // Built-in Azure RBAC role that is applied to a Key storage to grant data reader permissions. 
-resource blobDataReaderRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
-  name: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
-  scope: subscription()
-}
+// resource blobDataReaderRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+//   name: '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
+//   scope: subscription()
+// }
 
 // ---- Web App resources ----
-
 // Managed Identity for App Service
 resource appServiceManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: appServiceManagedIdentityName
@@ -88,7 +84,7 @@ resource appServiceManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdenti
 }
 
 // Grant the App Service managed identity key vault secrets role permissions
-module appServiceSecretsUserRoleAssignmentModule './modules/keyvaultRoleAssignment.bicep' = {
+module appServiceSecretsUserRoleAssignmentModule 'keyvaultRoleAssignment.bicep' = {
   name: 'appServiceSecretsUserRoleAssignmentDeploy'
   params: {
     roleDefinitionId: keyVaultSecretsUserRole.id
@@ -98,15 +94,15 @@ module appServiceSecretsUserRoleAssignmentModule './modules/keyvaultRoleAssignme
 }
 
 // Grant the App Service managed identity storage data reader role permissions
-resource blobDataReaderRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: storage
-  name: guid(resourceGroup().id, appServiceManagedIdentity.name, blobDataReaderRole.id)
-  properties: {
-    roleDefinitionId: blobDataReaderRole.id
-    principalType: 'ServicePrincipal'
-    principalId: appServiceManagedIdentity.properties.principalId
-  }
-}
+// resource blobDataReaderRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   scope: storage
+//   name: guid(resourceGroup().id, appServiceManagedIdentity.name, blobDataReaderRole.id)
+//   properties: {
+//     roleDefinitionId: blobDataReaderRole.id
+//     principalType: 'ServicePrincipal'
+//     principalId: appServiceManagedIdentity.properties.principalId
+//   }
+// }
 
 //App service plan
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
@@ -144,8 +140,7 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
     }
   }
   dependsOn: [
-    appServiceSecretsUserRoleAssignmentModule
-    blobDataReaderRoleAssignment
+    appServiceSecretsUserRoleAssignmentModule    
   ]
 }
 
@@ -154,9 +149,9 @@ resource appsettings 'Microsoft.Web/sites/config@2022-09-01' = {
   name: 'appsettings'
   parent: webApp
   properties: {
-    WEBSITE_RUN_FROM_PACKAGE: packageLocation
-    WEBSITE_RUN_FROM_PACKAGE_BLOB_MI_RESOURCE_ID: appServiceManagedIdentity.id
-    AZURE_SQL_CONNECTIONSTRING: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}${environment().suffixes.keyvaultDns}/secrets/adWorksConnString)'
+    // WEBSITE_RUN_FROM_PACKAGE: packageLocation
+    //WEBSITE_RUN_FROM_PACKAGE_BLOB_MI_RESOURCE_ID: appServiceManagedIdentity.id
+    //AZURE_SQL_CONNECTIONSTRING: '@Microsoft.KeyVault(SecretUri=https://${keyVault.name}${environment().suffixes.keyvaultDns}/secrets/adWorksConnString)'
     APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
     APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
     ApplicationInsightsAgent_EXTENSION_VERSION: '~2'
@@ -277,7 +272,7 @@ resource appServicePlanAutoScaleSettings 'Microsoft.Insights/autoscalesettings@2
       {
         name: 'Scale out condition'
         capacity: {
-          maximum: '5'
+          maximum: '3'
           default: '1'
           minimum: '1'
         }
@@ -327,3 +322,6 @@ output appServicePlanName string = appServicePlan.name
 
 @description('The name of the web app.')
 output appName string = webApp.name
+
+@description('the service principal of the web app.')
+output identityPrincipalId string = appServiceManagedIdentity.properties.principalId

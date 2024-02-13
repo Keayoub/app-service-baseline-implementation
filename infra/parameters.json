@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {  
+    "environmentName": {
+      "value": "Prodution"
+    },
+    "customDomainName": {
+      "value": "www.ayoubkebaili.com"
+    },
+    "openAiServiceName": {
+      "value": ""
+    },   
+    "openAiSkuName": {
+      "value": "S0"
+    },
+    "chatGptDeploymentCapacity": {
+      "value": 20
+    },
+    "chatGptModelVersion": {
+      "value": "1106-Preview"
+    },
+    "embeddingDeploymentCapacity": {
+      "value": 30
+    },
+    "useApplicationInsights": {
+      "value": true
+    },
+    "logAnalyticsName": {
+      "value": ""
+    },
+    "applicationInsightsDashboardName": {
+      "value": ""
+    },
+    "applicationInsightsName": {
+      "value": ""
+    },     
+    "developmentEnvironment": {
+      "value": true
+    },
+    "appGatewayListenerCertificate": {
+      "value": "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"
+    },
+    "adminPasswordOrKey": {
+      "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDecH07DRasuIwPn4vY+X+jK/M44UjICX86mkoSPfoNRpkx8XNBJInGXfO2Z6jQxYkkq9WH40LHbnirnOYd9CzVCfilDmZSKLrrtDYLpWFheQ25wbZJeNhHKM+ZeL4S5yBQDZz1oLTZ2Z301ssDMoipVZ9r6DiXDbfQ6gNAEkIPe98obgWkv+1MPv2tQ0XTWhx8toOi9IP5eAjOiG2QJgfszgWgd7BSr8vb/FwyEPPmevq9j58xuv1EvMWAITckz8V/6kiPMMTRtMUZg8Nx1IHgdrRvblnIqhZQWRz+w/UnQEt+33E5MyBov89MUueboOOw9R41J2uycF7RNyamxgpH gl-runner-vm"
+    },
+    "chatGptDeploymentName": {
+      "value": "ftb-dtt-chatgnb-turbo-prd"
+    },
+    "chatGptModelName": {
+      "value": "gpt-4"
+    },
+    "embeddingDeploymentName": {
+      "value": "embedding"
+    },
+    "embeddingModelName": {
+      "value": "text-embedding-ada-002"
+    }
+  }
+}

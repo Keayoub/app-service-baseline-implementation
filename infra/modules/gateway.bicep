@@ -1,7 +1,6 @@
 /*
   Deploy an Azure Application Gateway with WAF v2 and a custom domain name.
 */
-
 @description('This is the base name for each Azure resource name (6-12 chars)')
 param baseName string
 
@@ -63,7 +62,7 @@ resource appGatewayManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdenti
 }
 
 // Grant the Azure Application Gateway managed identity with key vault secrets role permissions; this allows pulling certificates.
-module appGatewaySecretsUserRoleAssignmentModule './modules/keyvaultRoleAssignment.bicep' = {
+module appGatewaySecretsUserRoleAssignmentModule './keyvaultRoleAssignment.bicep' = {
   name: 'appGatewaySecretsUserRoleAssignmentDeploy'
   params: {
     roleDefinitionId: keyVaultSecretsUserRole.id
@@ -302,3 +301,6 @@ resource appGatewayDiagSettings 'Microsoft.Insights/diagnosticSettings@2021-05-0
 
 @description('The name of the app gateway resource.')
 output appGateWayName string = appGateWay.name
+
+@description('The id of the public IP resource.')
+output appGatewayPublicIpId string = appGatewayPublicIp.id
