@@ -174,10 +174,11 @@ module gatewayModule 'modules/gateway.bicep' = {
     appGatewaySubnetName: networkModule.outputs.appGatewaySubnetName
     keyVaultName: secretsModule.outputs.keyVaultName
     gatewayCertSecretUri: secretsModule.outputs.gatewayCertSecretUri
-    logWorkspaceName: logWorkspace.name
+    logWorkspaceName: logWorkspace.outputs.logAnalyticsWorkspaceName
    }
    dependsOn: [
     webappModule 
+    logWorkspace
   ]
 }
 

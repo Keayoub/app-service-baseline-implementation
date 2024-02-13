@@ -84,7 +84,7 @@ resource appServiceManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdenti
 }
 
 // Grant the App Service managed identity key vault secrets role permissions
-module appServiceSecretsUserRoleAssignmentModule 'keyvaultRoleAssignment.bicep' = {
+module appServiceSecretsUserRoleAssignmentModule './security/keyvaultRoleAssignment.bicep' = {
   name: 'appServiceSecretsUserRoleAssignmentDeploy'
   params: {
     roleDefinitionId: keyVaultSecretsUserRole.id
