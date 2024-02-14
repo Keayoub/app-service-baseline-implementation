@@ -1,3 +1,5 @@
+// targetScope = 'subscription'
+
 @description('The location in which all resources should be deployed.')
 param location string = resourceGroup().location
 
@@ -198,16 +200,16 @@ module gitlabRunner 'modules/pipelines/gitlab-runner.bicep' = {
 }
 
 // Deploy APIM 
-module apimModule 'modules/apim.bicep' = {
-  name: 'apimDeploy'
-  params: {
-    location: location
-    baseName: resourceToken    
-    vnetName: networkModule.outputs.vnetNName        
-    privateEndpointsSubnetName:networkModule.outputs.privateEndpointsSubnetName
-    openaibackendUrl: openAiModule.outputs.endpoint
-  }
-}
+// module apimModule 'modules/apim.bicep' = {
+//   name: 'apimDeploy'
+//   params: {
+//     location: location
+//     baseName: resourceToken    
+//     vnetName: networkModule.outputs.vnetNName        
+//     privateEndpointsSubnetName:networkModule.outputs.privateEndpointsSubnetName
+//     openaibackendUrl: openAiModule.outputs.endpoint
+//   }
+// }
 
 // Add Role Assignements for Managed Identity
 module openAiRoleUser 'modules/security/role.bicep' = {

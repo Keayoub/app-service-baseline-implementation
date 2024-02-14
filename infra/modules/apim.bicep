@@ -11,6 +11,7 @@ param publisherName string = 'apimPublisher'
 
 @description('The pricing tier of this API Management service')
 @allowed([
+  'Basic'
   'Developer'
   'Standard'
   'Premium'
