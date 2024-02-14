@@ -175,7 +175,7 @@ resource appGateWay 'Microsoft.Network/applicationGateways@2022-11-01' = {
         name: 'probe-web${baseName}'
         properties: {
           protocol: 'Https'
-          path: '/favicon.ico'
+          path: '/'
           interval: 30
           timeout: 30
           unhealthyThreshold: 3

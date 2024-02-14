@@ -38,7 +38,8 @@ msbuild.wrn
 
 # pub file
 gl-runner
-gl-runner.pub
-appgw.pub
-appgw.key
-appgw.crt
+*.pub
+*.key
+*.crt
+*.pem
+

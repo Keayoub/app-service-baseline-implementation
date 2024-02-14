@@ -110,6 +110,7 @@ Note: Take into account that sql database enforce [password complexity](https://
      --resource-group $RESOURCE_GROUP \
      --parameters @./infra-as-code/bicep/parameters.json \
      --parameters baseName=$BASE_NAME
+
 ```
 
 ### Publish the web app
@@ -171,7 +172,11 @@ az storage blob upload -f ./SimpleWebApp.zip \
   --auth-mode login \
   -c deploy -n SimpleWebApp.zip
 
+
+az webapp deployment source config-zip --resource-group $RESOURCE_GROUP --name $NAME_OF_WEB_APP --src SimpleWebApp.zip
+
 az webapp restart --name $NAME_OF_WEB_APP --resource-group $RESOURCE_GROUP
+
 ```
 
 ### Validate the web app
