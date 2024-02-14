@@ -42,4 +42,5 @@ gl-runner
 *.key
 *.crt
 *.pem
+*.pfx
 
